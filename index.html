@@ -23,10 +23,24 @@
 			<h1>Free routes planner</h1>
 		</header>
 		<main>
+			<div class="controlPanel">
+				<div>
+					<input
+						type="text"
+						id="routeName"
+						placeholder="Nazwa trasy"
+					/>
+					<button id="saveButton">Zapisz trasę</button>
+				</div>
+				<select id="savedRoutes">
+					<option value="">Wybierz trasę</option>
+				</select>
+				<button id="exportButton">Eksportuj do GPX</button>
+			</div>
 			<div id="container">
 				<div id="map"></div>
 			</div>
-            <p id="distance"></p>
+			<p id="distance"></p>
 		</main>
 		<footer>Copyright with love by szam</footer>
 	</body>

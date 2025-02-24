@@ -28,7 +28,22 @@ const onError = (error) => {
 navigator.geolocation.watchPosition(onSuccess, onError);
 
 let routePoints = [];
-let polyline = L.polyline([], { color: 'blue', weight: 4 }).addTo(map);
+const savedRoutes = JSON.parse(localStorage.getItem('routes')) || {};
+const polyline = L.polyline([], { color: 'blue', weight: 4 }).addTo(map);
+
+
+const updateRouteList = () => {
+    const select = document.getElementById('savedRoutes');
+    select.innerHTML = '<option value="">Wybierz trasę</option>';
+    Object.keys(savedRoutes).forEach(name => {
+        const option = document.createElement('option');
+        option.value = name;
+        option.innerText = name;
+        select.appendChild(option);
+    });
+}
+
+updateRouteList();
 
 const calculateDistance = (points) => {
     let distance = 0;
@@ -51,3 +66,58 @@ const drawRoute = (e) => {
 }
 
 map.on("click", drawRoute);
+
+const saveRoute = () => {
+    const name = document.getElementById('routeName').value;
+    if (!name) {
+        alert("Podaj nazwę trasy!");
+        return;
+    }
+    savedRoutes[name] = routePoints;
+    localStorage.setItem('routes', JSON.stringify(savedRoutes));
+    updateRouteList();
+    alert(`Trasa "${name}" zapisana!`);
+}
+
+const saveButton = document.getElementById('saveButton');
+saveButton.addEventListener('click', saveRoute);
+
+const loadRoute = (name) => {
+    if (name === "Wybierz trasę") { routePoints = []}
+    if (!name || !savedRoutes[name]) return;
+    console.log(name);
+    routePoints = savedRoutes[name];
+    polyline.setLatLngs(routePoints);
+    map.fitBounds(polyline.getBounds());
+}
+
+const loadedRoutes = document.getElementById("savedRoutes");
+loadedRoutes.addEventListener("change", (e) => loadRoute(e.target.value));
+
+const exportToGPX = () => {
+    if (routePoints.length < 2) {
+        alert("Trasa jest za krótka do eksportu!");
+        return;
+    }
+    
+    let gpxData = `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="LeafletJS">
+<trk><name>Eksportowana Trasa</name><trkseg>`;
+
+    routePoints.forEach(pt => {
+        gpxData += `<trkpt lat="${pt.lat}" lon="${pt.lng}"></trkpt>\n`;
+    });
+
+    gpxData += `</trkseg></trk></gpx>`;
+
+    let blob = new Blob([gpxData], { type: "application/gpx+xml" });
+    let a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = "route.gpx";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+const exportButton = document.getElementById("exportButton");
+exportButton.addEventListener("click", exportToGPX);

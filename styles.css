@@ -4,6 +4,22 @@
   box-sizing: border-box;
 }
 
+header {
+    width: 90vw;
+    margin: 0 auto;
+    text-align: center;
+    padding-top: 2em;
+}
+
+.controlPanel {
+    width: 90vw;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    padding-top: 2em;
+    padding-bottom: 2em;
+}
+
 #container {
     width: 90vW;
     height: 80vh;
