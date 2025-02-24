@@ -25,7 +25,7 @@ const onError = (error) => {
     } 
 }
 
-navigator.geolocation.watchPosition(onSuccess, onError);
+navigator.geolocation.getCurrentPosition(onSuccess, onError);
 
 let routePoints = [];
 const savedRoutes = JSON.parse(localStorage.getItem('routes')) || {};
@@ -93,7 +93,7 @@ function resetMap() {
             map.removeLayer(layer);
         }
     });
-    navigator.geolocation.watchPosition(onSuccess, onError);
+    navigator.geolocation.getCurrentPosition(onSuccess, onError);
 }
 
 const loadRoute = (name) => {
