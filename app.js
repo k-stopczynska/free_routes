@@ -35,10 +35,13 @@ const polyline = L.polyline([], { color: 'blue', weight: 4 }).addTo(map);
 const updateRouteList = () => {
     const select = document.getElementById('savedRoutes');
     select.innerHTML = '<option value="">Wybierz trasę</option>';
-    Object.keys(savedRoutes).forEach(name => {
+    Object.entries(savedRoutes).forEach(([name, data]) => {
         const option = document.createElement('option');
         option.value = name;
-        option.innerText = name;
+        if (data.distance) {
+            option.innerText = name + ' ' + (data.distance/1000).toFixed(2) + 'km';
+        } else { option.innerText = name}
+        
         select.appendChild(option);
     });
 }
@@ -55,14 +58,13 @@ const calculateDistance = (points) => {
 
 const drawRoute = (e) => {
     let latlng = e.latlng;
-
     routePoints.push(latlng);
     L.marker(latlng).addTo(map);
     polyline.setLatLngs(routePoints);
-    
     const distance = calculateDistance(routePoints);
     const distanceElement = document.getElementById('distance');
-    distanceElement.textContent = `Długość trasy: ${distance/1000} kilometrów`;
+    distanceElement.textContent = `Długość trasy: ${(distance/1000).toFixed(2)} kilometrów`;
+
 }
 
 map.on("click", drawRoute);
@@ -73,20 +75,35 @@ const saveRoute = () => {
         alert("Podaj nazwę trasy!");
         return;
     }
-    savedRoutes[name] = routePoints;
+    savedRoutes[name] = {route: [...routePoints], distance: calculateDistance(routePoints)};
     localStorage.setItem('routes', JSON.stringify(savedRoutes));
     updateRouteList();
     alert(`Trasa "${name}" zapisana!`);
+    resetMap();
 }
 
 const saveButton = document.getElementById('saveButton');
 saveButton.addEventListener('click', saveRoute);
 
+function resetMap() {
+    routePoints = [];
+    polyline.setLatLngs([]); 
+    map.eachLayer(layer => {
+        if (layer instanceof L.Marker) {
+            map.removeLayer(layer);
+        }
+    });
+    navigator.geolocation.watchPosition(onSuccess, onError);
+}
+
 const loadRoute = (name) => {
-    if (name === "Wybierz trasę") { routePoints = []}
-    if (!name || !savedRoutes[name]) return;
-    console.log(name);
-    routePoints = savedRoutes[name];
+    if (!name) {
+        resetMap();
+        return;
+    }
+    if (!savedRoutes[name]) return;
+
+    routePoints = savedRoutes[name].route;
     polyline.setLatLngs(routePoints);
     map.fitBounds(polyline.getBounds());
 }
@@ -121,3 +138,6 @@ const exportToGPX = () => {
 
 const exportButton = document.getElementById("exportButton");
 exportButton.addEventListener("click", exportToGPX);
+
+const resetButton = document.getElementById("resetButton");
+resetButton.addEventListener("click", resetMap);
