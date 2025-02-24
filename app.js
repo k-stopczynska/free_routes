@@ -11,7 +11,7 @@ const onSuccess = (position) => {
     const { latitude, longitude } = position.coords;
     const marker = L.marker([latitude, longitude]).addTo(map); 
     const accuracy = position.coords.accuracy;
-    const circle = L.circle([latitude, longitude], { radius: accuracy, fillOpacity: 0 }).addTo(map);
+    const circle = L.circle([latitude, longitude], { radius: accuracy, fillOpacity: 0, color: "#f74d19" }).addTo(map);
     circle.color = "transparent";
     
     map.fitBounds(circle.getBounds());
@@ -29,7 +29,7 @@ navigator.geolocation.getCurrentPosition(onSuccess, onError);
 
 let routePoints = [];
 const savedRoutes = JSON.parse(localStorage.getItem('routes')) || {};
-const polyline = L.polyline([], { color: 'blue', weight: 4 }).addTo(map);
+const polyline = L.polyline([], { color: '#f74d19', weight: 4 }).addTo(map);
 
 
 const updateRouteList = () => {
@@ -59,7 +59,7 @@ const calculateDistance = (points) => {
 const drawRoute = (e) => {
     let latlng = e.latlng;
     routePoints.push(latlng);
-    L.marker(latlng).addTo(map);
+    L.circleMarker(latlng, { color: '#f74d19', fillColor: '#f74d19', fillOpacity: 0.7,radius:4 }).addTo(map);
     polyline.setLatLngs(routePoints);
     const distance = calculateDistance(routePoints);
     const distanceElement = document.getElementById('distance');
