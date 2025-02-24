@@ -102,8 +102,10 @@ const loadRoute = (name) => {
         return;
     }
     if (!savedRoutes[name]) return;
-
-    routePoints = savedRoutes[name].route;
+    if (savedRoutes[name].route) {
+        routePoints = savedRoutes[name].route;
+    } else {routePoints = savedRoutes[name]; }
+    
     polyline.setLatLngs(routePoints);
     map.fitBounds(polyline.getBounds());
 }

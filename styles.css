@@ -1,34 +1,119 @@
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: 'Rajdhani', sans-serif;
+}
+
+body {
+	background-color: #f0f0f0;
+	color: #222;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-height: 100vh;
 }
 
 header {
-    width: 90vw;
-    margin: 0 auto;
-    text-align: center;
-    padding-top: 2em;
+	background: #f74d19;
+	color: white;
+	text-align: center;
+	padding: 12px;
+	width: 100%;
+	font-weight: bold;
+}
+
+header h1 {
+    font-size: 2rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+
+main {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 95%;
+	max-width: 900px;
+	margin-top: 10px;
 }
 
 .controlPanel {
-    width: 90vw;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    padding-top: 2em;
-    padding-bottom: 2em;
+	background: white;
+	padding: 8px;
+	border-radius: 6px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	width: 100%;
+	justify-content: space-between;
+	align-items: center;
+}
+
+#distance {
+	font-weight: bold;
+	color: #388e3c;
+    padding-top: .5rem;
+    padding-bottom: 1rem;
+}
+
+.controlPanel input,
+.controlPanel select {
+	padding: 8px;
+	font-size: 0.9rem;
+	border-radius: 4px;
+	border: 1px solid #ccc;
+	outline: none;
+}
+
+.controlPanel button {
+	background: #388e3c;
+	color: white;
+	border: none;
+	cursor: pointer;
+	padding: 8px 12px;
+	border-radius: 4px;
+	font-weight: bold;
+	transition: background 0.3s;
+}
+
+.controlPanel button:hover {
+	background: #2e7d32;
 }
 
 #container {
-    width: 90vW;
-    height: 80vh;
-    margin: 0 auto;
-    background-color: coral;
-    border: 1px solid red;
+	margin-top: 10px;
+	width: 100%;
+	height: 600px;
 }
 
 #map {
-    width:100%;
-    height: 100%;
+	width: 100%;
+	height: 100%;
+	border-radius: 6px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+footer {
+	margin-top: 10px;
+	padding: 8px;
+	background: #f74d19;
+	color: white;
+	width: 100%;
+	text-align: center;
+	font-size: 0.85rem;
+}
+
+@media (max-width: 600px) {
+	.controlPanel {
+		flex-direction: column;
+		gap: 6px;
+		padding: 6px;
+	}
+
+	#container {
+		height: 500px;
+	}
 }
