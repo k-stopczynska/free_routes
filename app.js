@@ -85,7 +85,8 @@ const undoLastSegment = () => {
 map.on("click", drawRoute);
 
 const saveRoute = () => {
-    const name = document.getElementById('routeName').value;
+    const nameInput = document.getElementById('routeName');
+    let name = nameInput.value.trim();
     if (!name) {
         alert("Podaj nazwę trasy!");
         return;
@@ -94,6 +95,7 @@ const saveRoute = () => {
     localStorage.setItem('routes', JSON.stringify(savedRoutes));
     updateRouteList();
     alert(`Trasa "${name}" zapisana!`);
+    nameInput.value = '';
     resetMap();
 }
 
