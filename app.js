@@ -50,10 +50,17 @@ const updateRouteList = () => {
 
 updateRouteList();
 
+const renderDistance = (distance) => { 
+    const distanceElement = document.getElementById('distance');
+    distanceElement.textContent = `Długość trasy: ${(distance/1000).toFixed(2)} kilometrów`;
+}
+
 const calculateDistance = (points) => {
+    distance = 0;
     for (let i = 1; i < points.length; i++) {
     distance += points[i - 1].distanceTo(points[i]); 
     }
+    renderDistance(distance);
     return distance;
 }
 
@@ -64,8 +71,15 @@ const drawRoute = (e) => {
     circleMarkers.push(circleMarker);
     polyline.setLatLngs(routePoints);
     calculateDistance(routePoints);
-    const distanceElement = document.getElementById('distance');
-    distanceElement.textContent = `Długość trasy: ${(distance/1000).toFixed(2)} kilometrów`;
+}
+
+const undoLastSegment = () => {
+    if (routePoints.length === 0) return;
+    routePoints.pop();
+    const lastMarker = circleMarkers.pop();
+    map.removeLayer(lastMarker);
+    polyline.setLatLngs(routePoints);
+    calculateDistance(routePoints);
 }
 
 map.on("click", drawRoute);
@@ -98,6 +112,7 @@ function resetMap() {
             map.removeLayer(layer);
         }
     });
+    calculateDistance(routePoints);
     navigator.geolocation.getCurrentPosition(onSuccess, onError);
 }
 
@@ -180,3 +195,6 @@ exportButton.addEventListener("click", exportToGPX);
 
 const resetButton = document.getElementById("resetButton");
 resetButton.addEventListener("click", resetMap);
+
+const undoButton = document.getElementById("undoButton");
+undoButton.addEventListener("click", undoLastSegment);
