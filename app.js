@@ -129,6 +129,7 @@ const loadRoute = (name) => {
     } else {routePoints = savedRoutes[name]; }
     
     polyline.setLatLngs(routePoints);
+    renderDistance(savedRoutes[name].distance);
     map.fitBounds(polyline.getBounds());
 }
 
@@ -136,64 +137,106 @@ const loadedRoutes = document.getElementById("savedRoutes");
 loadedRoutes.addEventListener("change", (e) => loadRoute(e.target.value));
 
 const loadGpxRoute = (event) => {
-const file = event.target.files[0];
+    const file = event.target.files[0];
     if (file) {
         const reader = new FileReader();
-        reader.onload = function (event) {
-            const gpxData = event.target.result;
+        reader.onload = function (e) {
+            const gpxData = e.target.result;
+
             const gpxLayer = new L.GPX(gpxData, {
                 async: true,
                 marker_options: {
-                    startIconUrl: "https://leafletjs.com/examples/custom-icons/start.png",
-                    endIconUrl: "https://leafletjs.com/examples/custom-icons/finish.png",
+                    startIconUrl: "",
+                    endIconUrl: "",
                     shadowUrl: ""
+                },
+                    polyline_options: {
+                    color: '#f74d19',        
+                    weight: 4,           
+                    opacity: 0.7        
                 }
             }).on("loaded", function (event) {
-                map.fitBounds(event.target.getBounds());
-                distance = event.target.get_distance() / 1000;
+
+                const bounds = event.target.getBounds();
+                map.fitBounds(bounds);
+
                 routePoints = [];
-                event.target.getLayers().forEach(layer => {
-                        if (layer instanceof L.Polyline) {
-                            routePoints.push(...layer.getLatLngs());
-                        }
-                    });
+
+                const gpxData = event.target._gpx;
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(gpxData, "application/xml");
+                const trackPoints = xmlDoc.getElementsByTagName("trkpt");
+
+                Array.from(trackPoints).forEach((point) => {
+                    const lat = parseFloat(point.getAttribute("lat"));
+                    const lon = parseFloat(point.getAttribute("lon"));
+                    routePoints.push(new L.LatLng(lat, lon));
+                });
+                if (routePoints.length === 0) {
+                    console.error("No route points found in the GPX file.");
+                } else {
+                    console.log("Loaded Route Points: ", routePoints);
+                    routePoints.forEach((latLng) => {
+                        L.circleMarker(latLng, {
+                            color: '#f74d19',
+                            radius: 4,
+                            fillOpacity: 0.7
+                        }).addTo(map);
+                });
+                    calculateDistance(routePoints);
+                }
+
             }).addTo(map);
         };
         reader.readAsText(file);
+    } else {
+        console.error("No file selected.");
     }
-}
+};
 
 const gpxUploadButton = document.getElementById("gpxUpload");
 gpxUploadButton.addEventListener("change", (event) => loadGpxRoute(event));
 
 
-const exportToGPX = () => {
+const exportToGPX = (routePoints) => {
+        if (!Array.isArray(routePoints)) {
+        console.error("Expected an array of route points.");
+        alert("Trasa jest niepoprawna. Spróbuj ponownie.");
+        return;
+    }
     if (routePoints.length < 2) {
         alert("Trasa jest za krótka do eksportu!");
         return;
     }
-    
+
     let gpxData = `<?xml version="1.0" encoding="UTF-8"?>
 <gpx version="1.1" creator="LeafletJS">
-<trk><name>Eksportowana Trasa</name><trkseg>`;
+  <trk>
+    <name>Eksportowana Trasa</name>
+    <trkseg>`;
 
     routePoints.forEach(pt => {
-        gpxData += `<trkpt lat="${pt.lat}" lon="${pt.lng}"></trkpt>\n`;
+        if (pt && pt.lat && pt.lng) {
+            gpxData += `<trkpt lat="${pt.lat}" lon="${pt.lng}"></trkpt>\n`;
+        }
     });
 
     gpxData += `</trkseg></trk></gpx>`;
 
     let blob = new Blob([gpxData], { type: "application/gpx+xml" });
+
     let a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = "route.gpx";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-}
+    resetMap();
+};
+
 
 const exportButton = document.getElementById("exportButton");
-exportButton.addEventListener("click", exportToGPX);
+exportButton.addEventListener("click", () => exportToGPX(routePoints));
 
 const resetButton = document.getElementById("resetButton");
 resetButton.addEventListener("click", resetMap);
