@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Document</title>
+		<title>FREEROUTES</title>
         <link rel="icon" href="favicon.ico" type="image/x-icon">
         <link rel="apple-touch-icon" href="apple-touch-icon.png">
 		<link
@@ -19,6 +19,7 @@
 			integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
 			crossorigin=""
 		></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.5.0/gpx.min.js"></script>
 		<script src="./app.js" defer></script>
 	</head>
 	<body>
@@ -42,6 +43,8 @@
 					<option value="">Wybierz trasę</option>
 				</select>
                 <button id="resetButton">Resetuj wyznaczanie</button>
+                <label for="gpxUpload" class="custom-file-upload">Załaduj plik GPX</label>
+                <input type="file" id="gpxUpload" accept=".gpx" hidden>
 				<button id="exportButton">Eksportuj do GPX</button>
 			</div>
 			<div id="container">

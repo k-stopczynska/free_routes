@@ -28,6 +28,8 @@ const onError = (error) => {
 navigator.geolocation.getCurrentPosition(onSuccess, onError);
 
 let routePoints = [];
+let circleMarkers = [];
+let distance = 0;
 const savedRoutes = JSON.parse(localStorage.getItem('routes')) || {};
 const polyline = L.polyline([], { color: '#f74d19', weight: 4 }).addTo(map);
 
@@ -49,7 +51,6 @@ const updateRouteList = () => {
 updateRouteList();
 
 const calculateDistance = (points) => {
-    let distance = 0;
     for (let i = 1; i < points.length; i++) {
     distance += points[i - 1].distanceTo(points[i]); 
     }
@@ -59,12 +60,12 @@ const calculateDistance = (points) => {
 const drawRoute = (e) => {
     let latlng = e.latlng;
     routePoints.push(latlng);
-    L.circleMarker(latlng, { color: '#f74d19', fillColor: '#f74d19', fillOpacity: 0.7,radius:4 }).addTo(map);
+    const circleMarker = L.circleMarker(latlng, { color: '#f74d19', fillColor: '#f74d19', fillOpacity: 0.7, radius: 4 }).addTo(map);
+    circleMarkers.push(circleMarker);
     polyline.setLatLngs(routePoints);
-    const distance = calculateDistance(routePoints);
+    calculateDistance(routePoints);
     const distanceElement = document.getElementById('distance');
     distanceElement.textContent = `Długość trasy: ${(distance/1000).toFixed(2)} kilometrów`;
-
 }
 
 map.on("click", drawRoute);
@@ -87,9 +88,13 @@ saveButton.addEventListener('click', saveRoute);
 
 function resetMap() {
     routePoints = [];
+    circleMarkers.forEach(marker => {
+        map.removeLayer(marker);
+    });
+    circleMarkers = [];
     polyline.setLatLngs([]); 
     map.eachLayer(layer => {
-        if (layer instanceof L.Marker) {
+        if (layer instanceof L.Marker || layer instanceof L.circleMarker) {
             map.removeLayer(layer);
         }
     });
@@ -112,6 +117,38 @@ const loadRoute = (name) => {
 
 const loadedRoutes = document.getElementById("savedRoutes");
 loadedRoutes.addEventListener("change", (e) => loadRoute(e.target.value));
+
+const loadGpxRoute = (event) => {
+const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            const gpxData = event.target.result;
+            const gpxLayer = new L.GPX(gpxData, {
+                async: true,
+                marker_options: {
+                    startIconUrl: "https://leafletjs.com/examples/custom-icons/start.png",
+                    endIconUrl: "https://leafletjs.com/examples/custom-icons/finish.png",
+                    shadowUrl: ""
+                }
+            }).on("loaded", function (event) {
+                map.fitBounds(event.target.getBounds());
+                distance = event.target.get_distance() / 1000;
+                routePoints = [];
+                event.target.getLayers().forEach(layer => {
+                        if (layer instanceof L.Polyline) {
+                            routePoints.push(...layer.getLatLngs());
+                        }
+                    });
+            }).addTo(map);
+        };
+        reader.readAsText(file);
+    }
+}
+
+const gpxUploadButton = document.getElementById("gpxUpload");
+gpxUploadButton.addEventListener("change", (event) => loadGpxRoute(event));
+
 
 const exportToGPX = () => {
     if (routePoints.length < 2) {
