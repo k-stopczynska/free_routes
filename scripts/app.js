@@ -1,43 +1,3 @@
-// // app.js
-// import { onSuccess, onError } from './geolocation.js';
-// import { updateRouteList, drawRoute, undoLastSegment, saveRoute, loadRoute, resetMap } from './route.js';
-// import { exportToGPX } from './utils.js';
-// import { loadGpxRoute } from './gpx.js';
-
-// // Initialize Map
-// const map = L.map('map').setView([51.505, -0.09], 13);
-
-// L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-//     maxZoom: 19,
-//     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-// }).addTo(map);
-
-// // Geolocation functionality
-// navigator.geolocation.getCurrentPosition(onSuccess, onError);
-
-// // Event listeners for UI interactions
-// map.on("click", drawRoute);
-
-// const saveButton = document.getElementById('saveButton');
-// saveButton.addEventListener('click', saveRoute);
-
-// const loadedRoutes = document.getElementById("savedRoutes");
-// loadedRoutes.addEventListener("change", (e) => loadRoute(e.target.value));
-
-// const resetButton = document.getElementById("resetButton");
-// resetButton.addEventListener("click", resetMap);
-
-// const undoButton = document.getElementById("undoButton");
-// undoButton.addEventListener("click", undoLastSegment);
-
-// const gpxUploadButton = document.getElementById("gpxUpload");
-// gpxUploadButton.addEventListener("change", (event) => loadGpxRoute(event));
-
-// const exportButton = document.getElementById("exportButton");
-// exportButton.addEventListener("click", () => exportToGPX(routePoints));
-
-
-
 
 const map = L.map('map').setView([51.505, -0.09], 13);
 
@@ -46,11 +6,61 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
 
+let latitude;
+let longitude;
+
+const generateRoute = async () => {
+        const data = {
+        coordinates: [[longitude, latitude], [longitude+0.1, latitude]],
+            // radiuses: [15000],
+        alternative_routes:{target_count:2,weight_factor:5,share_factor:0.2},
+        preference: 'recommended',
+        profileName: 'driving-car',
+        geometry: true,
+        instructions: true,
+        language: 'en',
+        units: 'm'
+    };
+    console.log(data);
+    const request = await fetch('https://api.openrouteservice.org/v2/directions/driving-car/geojson', {
+    method: 'POST',
+        headers: {
+        'Authorization': 'api_key',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8'
+    },
+    body: JSON.stringify(data)
+});
+    const response = await request.json();
+    console.log(response);
+
+                if (response.features && response.features[0].geometry) {
+                    const isochroneGeoJsonThere = response.features[0].geometry;
+                    const isochroneGeoJsonBack = response.features[1].geometry;
+
+                L.geoJSON(isochroneGeoJsonThere, {
+                    style: {
+                        color: 'green',
+                        weight: 2,
+                        opacity: 0.7
+                    }
+                }).addTo(map);
+                L.geoJSON(isochroneGeoJsonBack, {
+                    style: {
+                        color: 'red',
+                        weight: 2,
+                        opacity: 0.7
+                    }
+                }).addTo(map);
+            }
+}
 
 
-const onSuccess = (position) => {
-    const { latitude, longitude } = position.coords;
+const onSuccess = async(position) => {
+    latitude = await position.coords.latitude;
+    longitude = await position.coords.longitude;
     const marker = L.marker([latitude, longitude]).addTo(map); 
+    generateRoute();
     const accuracy = position.coords.accuracy;
     const circle = L.circle([latitude, longitude], { radius: accuracy, fillOpacity: 0, color: "#f74d19" }).addTo(map);
     circle.color = "transparent";
@@ -284,3 +294,5 @@ resetButton.addEventListener("click", resetMap);
 
 const undoButton = document.getElementById("undoButton");
 undoButton.addEventListener("click", undoLastSegment);
+
+
