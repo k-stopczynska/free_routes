@@ -1,15 +1,14 @@
-import i18next from 'i18next';
-
-class LanguageSwitch {
-
-
+export class LanguageSwitch {
     constructor() {
-        initializeI18next();
+        this.initializeI18next();
+        this.setDefaultLang();
+    
+        this.addEventListener();
     }
     
     setDefaultLang() {
    const userLang = navigator.language || navigator.userLanguage; 
-        const defaultLang = userLang.split('-')[0];
+        const defaultLang = userLang.split('-')[0] || 'en';
         i18next.changeLanguage(defaultLang, () => {
         render();  
 });

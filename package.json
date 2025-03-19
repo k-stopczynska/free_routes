@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "dotenv": "^16.4.7",
-    "i18next": "^24.2.3"
+    "dotenv": "^16.4.7"
   }
 }
