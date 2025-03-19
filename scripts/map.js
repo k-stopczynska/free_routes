@@ -3,7 +3,7 @@ import { Geolocation } from './Geolocation.js';
 import { Route } from './Route.js';
 
 
-class Map {
+export class Map {
     map;
     geolocation;
     route;
@@ -17,5 +17,4 @@ class Map {
         this.route = new Route(this.map);
     }
 }
-const map = new Map();
-map.init();
+

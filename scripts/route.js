@@ -4,12 +4,14 @@ import { Gpx } from './Gpx.js';
 
 
 export class Route {
+    map;
     routePoints;
     circleMarkers;
     distance;
     savedRoutes;
     polyline;
     gpx;
+
     constructor(map) {
         this.map = map;
         this.routePoints = [];
@@ -46,7 +48,7 @@ drawRoute(e) {
     calculateDistance(this.routePoints);
     };
     
-    undoLastSegment() {
+undoLastSegment() {
     if (this.routePoints.length === 0) return;
     this.routePoints.pop();
     const lastMarker = this.circleMarkers.pop();
