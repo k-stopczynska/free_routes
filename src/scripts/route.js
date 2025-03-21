@@ -1,6 +1,6 @@
 // route.js
 import { calculateDistance, renderDistance } from './utils.js';
-import { Gpx } from './Gpx.js';
+import { Gpx } from './gpx.js';
 
 
 export class Route {

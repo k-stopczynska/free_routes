@@ -1,7 +1,7 @@
 export class LanguageSwitch {
     constructor() {
         this.initializeI18next();
-        this.setDefaultLang();
+        // this.setDefaultLang();
     
         this.addEventListener();
     }

@@ -1,4 +1,4 @@
-import { Map } from './Map.js';
+import { Map } from './map.js';
 import { LanguageSwitch } from './LanguageSwitch.js';
 
 const map = new Map();
