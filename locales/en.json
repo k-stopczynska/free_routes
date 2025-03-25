@@ -1,9 +1,10 @@
 {
+	"routeName": "Route Name",
 	"save": "Save",
 	"savedRoutes": "Saved Routes",
 	"resetMap": "Reset Map",
 	"undo": "Undo",
-    "uploadGPX": "Upload GPX",
-    "exportGPX": "Export GPX",
-    "distance": "Route Length: {{distance}} km"
+	"uploadGPX": "Upload GPX",
+	"exportGPX": "Export GPX",
+	"distance": "Route Length: "
 }

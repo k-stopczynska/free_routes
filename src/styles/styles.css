@@ -48,6 +48,13 @@ main {
 	padding-bottom: 60px;
 }
 
+#routeLengthContainer {
+	display: flex;
+	gap: 0.5rem;
+	padding-top: 0.5rem;
+	padding-bottom: 1rem;
+}
+
 .controlPanel {
 	background: white;
 	padding: 8px;
@@ -69,8 +76,6 @@ main {
 #distance {
 	font-weight: bold;
 	color: #388e3c;
-	padding-top: 0.5rem;
-	padding-bottom: 1rem;
 }
 
 .controlPanel input,

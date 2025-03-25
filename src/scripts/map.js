@@ -1,4 +1,5 @@
-
+import L from 'leaflet';
+import 'leaflet-gpx';
 import { Geolocation } from './geolocation.js';
 import { Route } from './route.js';
 

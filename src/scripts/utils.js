@@ -1,6 +1,6 @@
 export const renderDistance = (distance) => { 
     const distanceElement = document.getElementById('distance');
-    distanceElement.textContent = `Długość trasy: ${(distance / 1000).toFixed(2)} kilometrów`;
+    distanceElement.innerHTML = `${(distance / 1000).toFixed(2)} km`;
 };
 
 export const calculateDistance = (points) => {

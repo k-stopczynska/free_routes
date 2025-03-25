@@ -1,3 +1,5 @@
+import L from 'leaflet';
+import 'leaflet-gpx';
 import { calculateDistance } from './utils.js';
 
 export class Gpx { 

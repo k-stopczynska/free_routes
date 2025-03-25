@@ -1,9 +1,10 @@
 {
+	"routeName": "Nazwa trasy",
 	"save": "Zapisz trasę",
 	"savedRoutes": "Wybierz trasę",
 	"resetMap": "Resetuj mapę",
 	"undo": "Resetuj ostatni",
 	"uploadGPX": "Załaduj GPX",
 	"exportGPX": "Exportuj do GPX",
-	"distance": "Długość trasy: {{distance}} km"
+	"distance": "Długość trasy: "
 }

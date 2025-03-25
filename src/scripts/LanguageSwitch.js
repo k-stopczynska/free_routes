@@ -1,50 +1,56 @@
+import i18next from 'i18next';
+import HttpBackend from 'i18next-http-backend';
+
 export class LanguageSwitch {
     constructor() {
+        
         this.initializeI18next();
-        // this.setDefaultLang();
-    
+        this.setDefaultLang();
         this.addEventListener();
     }
     
     setDefaultLang() {
-   const userLang = navigator.language || navigator.userLanguage; 
+        const userLang = navigator.language || navigator.userLanguage; 
         const defaultLang = userLang.split('-')[0] || 'en';
-        i18next.changeLanguage(defaultLang, () => {
-        render();  
-});
+        i18next.changeLanguage(defaultLang, (err, t) => {
+            if (err) console.log('something went wrong', err);
+            this.render();
+        });
     }
-    async initializeI18next() {
- 
-    const en = await fetch('/locales/en.json').then(response => response.json());
-    const pl = await fetch('/locales/pl.json').then(response => response.json());
 
-    i18next.init({
-        lng: 'en',
-        resources: {
-            en: { translation: en },
-            pl: { translation: pl }
-        }
-    }, function (err, t) {
-        if (err) console.error('Error loading translations:', err);
-        render();
+    async initializeI18next() {
+        await i18next
+            .use(HttpBackend)
+            .init({
+                fallbackLng: 'en',
+                backend: {
+                    loadPath: '/locales/{{lng}}.json', 
+            },
+                debug: true,
+        
+            },(err,t) => {
+                if (err) console.error('Error loading translations:', err);
+        
+        this.render();
     });
 }
 
-render() {
-    document.getElementById('saveButton').innerText = i18next.t('save');
-    document.getElementById("savedRoutes").innerText = i18next.t('savedRoutes'); 
-    document.getElementById("resetButton").innerText = i18next.t('resetMap');
-    document.getElementById("undoButton").innerText = i18next.t('undo');
-    document.getElementById("gpxUpload").innerText = i18next.t('uploadGPX');
-    document.getElementById("exportButton").innerText = i18next.t('exportGPX');
-    document.getElementById('distance').innerText = i18next.t('distance');
+    async render() {
+    document.getElementById('routeName').placeholder = await i18next.t('routeName');
+    document.getElementById('saveButton').innerText = await i18next.t('save');
+    document.getElementById("savedRoutes").innerHTML =  `<option value="">${i18next.t('savedRoutes')}</option>`; 
+    document.getElementById("resetButton").innerText = await i18next.t('resetMap');
+    document.getElementById("undoButton").innerText = await i18next.t('undo');
+    document.getElementById("uploadGPX").innerText = await i18next.t('uploadGPX');
+    document.getElementById("exportButton").innerText = await i18next.t('exportGPX');
+    document.getElementById('routeLength').innerText = await i18next.t('distance');
 }
 
-addListener() {
-        document.getElementById('languageSelector').addEventListener('change', function(e) {
-    const selectedLanguage = e.target.value;
-    i18next.changeLanguage(selectedLanguage, () => {
-        render();
+addEventListener() {
+    document.getElementById('languageSelector').addEventListener('change', (e) => {
+        const selectedLanguage = e.target.value;
+        i18next.changeLanguage(selectedLanguage, () => {
+        this.render();
     });
 });
     } 

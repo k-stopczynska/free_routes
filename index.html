@@ -21,13 +21,6 @@
 			rel="stylesheet"
 		/>
 		<link rel="stylesheet" href="./src/styles/styles.css" />
-		<script
-			src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-			integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-			crossorigin=""
-		></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.5.0/gpx.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/i18next@21.6.3/dist/umd/i18next.min.js"></script>
 		<script type="module" src="./src/scripts/app.js" defer></script>
 	</head>
 	<body>
@@ -40,29 +33,27 @@
 			</select>
 		</header>
 		<main>
-			<p id="distance"></p>
+			<div id="routeLengthContainer"><p id="routeLength"><p id="distance"></p></p></div>
 			<div class="controlPanel">
 				<div class="controlPanelGroup">
 					<input
 						type="text"
 						id="routeName"
-						placeholder="Nazwa trasy"
 					/>
-					<button id="saveButton">Zapisz trasę</button>
+					<button id="saveButton"></button>
 				</div>
 				<select id="savedRoutes">
-					<option value="">Wybierz trasę</option>
 				</select>
 				<div class="controlPanelGroup">
-					<button id="undoButton">Resetuj ostatni</button>
-					<button id="resetButton">Resetuj mapę</button>
+					<button id="undoButton"></button>
+					<button id="resetButton"></button>
 				</div>
 				<div class="controlPanelGroup">
-					<label for="gpxUpload" class="custom-file-upload"
-						>Załaduj GPX</label
+					<label for="gpxUpload" class="custom-file-upload" id="uploadGPX"
+						></label
 					>
 					<input type="file" id="gpxUpload" accept=".gpx" hidden />
-					<button id="exportButton">Eksportuj do GPX</button>
+					<button id="exportButton"></button>
 				</div>
 			</div>
 			<div id="container">
