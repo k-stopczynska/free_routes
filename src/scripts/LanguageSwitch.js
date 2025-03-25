@@ -12,6 +12,8 @@ export class LanguageSwitch {
     setDefaultLang() {
         const userLang = navigator.language || navigator.userLanguage; 
         const defaultLang = userLang.split('-')[0] || 'en';
+        const langSelector = document.getElementById('languageSelector');
+        defaultLang === 'en' ? langSelector.checked = false : langSelector.checked = true;
         i18next.changeLanguage(defaultLang, (err, t) => {
             if (err) console.log('something went wrong', err);
             this.render();
@@ -48,7 +50,7 @@ export class LanguageSwitch {
 
 addEventListener() {
     document.getElementById('languageSelector').addEventListener('change', (e) => {
-        const selectedLanguage = e.target.value;
+        const selectedLanguage = e.target.checked ? 'pl' : 'en';
         i18next.changeLanguage(selectedLanguage, () => {
         this.render();
     });
