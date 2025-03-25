@@ -25,9 +25,33 @@ export class LanguageSwitch {
             .use(HttpBackend)
             .init({
                 fallbackLng: 'en',
-                backend: {
-                    loadPath: '/locales/{{lng}}.json', 
-            },
+                resources: {
+                    en: {
+                        translation: {
+                            "routeName": "Route Name",
+                            "save": "Save",
+                            "savedRoutes": "Saved Routes",
+                            "resetMap": "Reset Map",
+                            "undo": "Undo",
+                            "uploadGPX": "Upload GPX",
+                            "exportGPX": "Export GPX",
+                            "distance": "Route Length: "
+                        },
+                    },
+                    pl: {
+                        translation: {
+                            "routeName": "Nazwa trasy",
+                            "save": "Zapisz trasę",
+                            "savedRoutes": "Wybierz trasę",
+                            "resetMap": "Resetuj mapę",
+                            "undo": "Resetuj ostatni",
+                            "uploadGPX": "Załaduj GPX",
+                            "exportGPX": "Exportuj do GPX",
+                            "distance": "Długość trasy: "
+                        }
+                    }
+                },
+
                 debug: true,
         
             },(err,t) => {
