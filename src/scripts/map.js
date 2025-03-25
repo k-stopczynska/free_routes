@@ -1,6 +1,7 @@
-
-import { Geolocation } from './Geolocation.js';
-import { Route } from './Route.js';
+import L from 'leaflet';
+import 'leaflet-gpx';
+import { Geolocation } from './geolocation.js';
+import { Route } from './route.js';
 
 
 export class Map {

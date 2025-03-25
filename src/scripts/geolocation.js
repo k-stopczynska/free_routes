@@ -1,3 +1,5 @@
+import L from 'leaflet';
+import 'leaflet-gpx';
 export class Geolocation { 
     constructor(map) {
         this.map = map;

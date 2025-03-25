@@ -1,6 +1,7 @@
-// route.js
+import L from 'leaflet';
+import 'leaflet-gpx';
 import { calculateDistance, renderDistance } from './utils.js';
-import { Gpx } from './Gpx.js';
+import { Gpx } from './gpx.js';
 
 
 export class Route {
@@ -26,7 +27,6 @@ export class Route {
 
 updateRouteList() {
     const select = document.getElementById('savedRoutes');
-    select.innerHTML = '<option value="">Wybierz trasę</option>';
     Object.entries(this.savedRoutes).forEach(([name, data]) => {
         const option = document.createElement('option');
         option.value = name;

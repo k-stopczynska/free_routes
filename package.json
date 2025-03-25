@@ -1,5 +1,16 @@
 {
+  "devDependencies": {
+    "vite": "^6.2.2"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
   "dependencies": {
-    "dotenv": "^16.4.7"
+    "i18next": "^21.10.0",
+    "i18next-http-backend": "^3.0.2",
+    "leaflet": "^1.9.4",
+    "leaflet-gpx": "^1.5.0"
   }
 }
