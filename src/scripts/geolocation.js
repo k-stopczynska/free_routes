@@ -1,5 +1,6 @@
 import L from 'leaflet';
 import 'leaflet-gpx';
+import { generateRoute } from './RouteCreator.js';
 export class Geolocation { 
     constructor(map) {
         this.map = map;
@@ -8,6 +9,7 @@ export class Geolocation {
 
 onSuccess(position) {
     const { latitude, longitude } = position.coords;
+    generateRoute(latitude, longitude, this.map);
     const marker = L.marker([latitude, longitude]).addTo(this.map);
     const accuracy = position.coords.accuracy;
     const circle = L.circle([latitude, longitude], { radius: accuracy, fillOpacity: 0, color: "#f74d19" }).addTo(this.map);

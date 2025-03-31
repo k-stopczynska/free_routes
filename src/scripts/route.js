@@ -23,6 +23,7 @@ export class Route {
         this.addEventListeners();  
         this.updateRouteList();
         this.gpx = new Gpx(this.map, this.routePoints);
+        
     }
 
 updateRouteList() {
@@ -37,6 +38,7 @@ updateRouteList() {
         }
         select.appendChild(option);
     });
+    
     };
     
 drawRoute(e) {
