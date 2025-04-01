@@ -63,8 +63,10 @@ export class LanguageSwitch {
 
     async render() {
     document.getElementById('routeName').placeholder = await i18next.t('routeName');
-    document.getElementById('saveButton').innerText = await i18next.t('save');
-    document.getElementById("savedRoutes").innerHTML =  `<option value="">${i18next.t('savedRoutes')}</option>`; 
+        document.getElementById('saveButton').innerText = await i18next.t('save');
+        if (JSON.parse(localStorage.getItem('routes')) == undefined || JSON.parse(localStorage.getItem('routes')) == null) {
+             document.getElementById("savedRoutes").innerHTML =  `<option value="">${i18next.t('savedRoutes')}</option>`; 
+        }
     document.getElementById("resetButton").innerText = await i18next.t('resetMap');
     document.getElementById("undoButton").innerText = await i18next.t('undo');
     document.getElementById("uploadGPX").innerText = await i18next.t('uploadGPX');

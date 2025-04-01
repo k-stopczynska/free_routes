@@ -21,14 +21,18 @@ export class Route {
         this.savedRoutes = JSON.parse(localStorage.getItem('routes')) || {};
         this.polyline = L.polyline([], { color: '#f74d19', weight: 4 }).addTo(this.map);
         this.addEventListeners();  
-        this.updateRouteList();
+        this.loadRoutes();
         this.gpx = new Gpx(this.map, this.routePoints);
-        
     }
 
-updateRouteList() {
-    const select = document.getElementById('savedRoutes');
-    Object.entries(this.savedRoutes).forEach(([name, data]) => {
+    async loadRoutes() { 
+        this.savedRoutes = await JSON.parse(localStorage.getItem('routes'));
+        this.updateRouteList();
+    }
+
+    updateRouteList() {
+        const select = document.getElementById('savedRoutes');
+        Object.entries(this.savedRoutes).forEach(([name, data]) => {
         const option = document.createElement('option');
         option.value = name;
         if (data.distance) {
@@ -65,7 +69,7 @@ undoLastSegment() {
     if (!name) {
         alert("Podaj nazwę trasy!");
         return;
-    }
+     }
     this.savedRoutes[name] = { route: [...this.routePoints], distance: calculateDistance(this.routePoints) };
     localStorage.setItem('routes', JSON.stringify(this.savedRoutes));
     this.updateRouteList();
