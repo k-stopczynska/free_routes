@@ -1,20 +1,26 @@
 import L from 'leaflet';
 import 'leaflet-gpx';
-import { generateRoute } from './RouteCreator.js';
+
 export class Geolocation { 
     constructor(map) {
         this.map = map;
         navigator.geolocation.getCurrentPosition(this.onSuccess.bind(this), this.onError.bind(this));
     }
 
+    getCurrentPosition() {
+        return new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject);
+        });
+    }
+
 onSuccess(position) {
     const { latitude, longitude } = position.coords;
-    generateRoute(latitude, longitude, this.map);
     const marker = L.marker([latitude, longitude]).addTo(this.map);
     const accuracy = position.coords.accuracy;
     const circle = L.circle([latitude, longitude], { radius: accuracy, fillOpacity: 0, color: "#f74d19" }).addTo(this.map);
     circle.color = "transparent";
     this.map.fitBounds(circle.getBounds());
+    return [latitude, longitude];
 };
 
 onError(error) {

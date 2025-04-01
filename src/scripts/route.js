@@ -26,6 +26,7 @@ export class Route {
     }
 
     async loadRoutes() { 
+        if (JSON.parse(localStorage.getItem('routes') === null || JSON.parse(localStorage.getItem('routes') === undefined))) return;
         this.savedRoutes = await JSON.parse(localStorage.getItem('routes'));
         this.updateRouteList();
     }
