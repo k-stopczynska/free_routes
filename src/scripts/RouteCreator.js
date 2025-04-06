@@ -5,6 +5,7 @@ export class RouteCreator {
     targetDistance;
     direction;
     routeType;
+    foundRoute = false;
 
     constructor(map, geolocation) { 
         this.map = map;
@@ -96,11 +97,9 @@ export class RouteCreator {
 
         const position = await this.geolocation.getCurrentPosition(); 
         const { latitude, longitude } = position.coords;
-        let pointB = this.calculateDestination(latitude, longitude, 2000, 45);
-    
-    let foundRoute = false;
+        let pointB = this.calculateDestination(latitude, longitude, 2000, this.direction);
             
-    while (!foundRoute) {
+    while (!this.foundRoute) {
         const coordinates = [
             [longitude, latitude],
             [pointB.longitude, pointB.latitude]
@@ -113,20 +112,28 @@ export class RouteCreator {
             console.log(`Route length: ${routeLength} meters`);
             console.log(Math.abs(routeLength - this.targetDistance))
             if (Math.abs(routeLength - this.targetDistance) <= 1000) {
-                foundRoute = true;
+                this.foundRoute = true;
                 routeData = response.features;
-                console.log(response.features);
-            } else {
-                pointB = this.calculateDestination(latitude, longitude, dist + 300, 90);
-                console.log(`Trying new Point B: ${pointB.latitude}, ${pointB.longitude}`);
+                console.log('Valid route found:', response.features);
             }
-        } else {
+            else if (routeLength < this.targetDistance) {
+                pointB = this.calculateDestination(latitude, longitude, dist + 300, this.direction);
+                console.log(`Route too short. Trying new Point B: ${pointB.latitude}, ${pointB.longitude}`);
+            }
+            else if (Math.abs(routeLength - this.targetDistance) >= 1500) {
+                this.direction += 30;
+                console.log(this.direction);
+                pointB = this.calculateDestination(latitude, longitude, dist, this.direction);
+                console.log(pointB.latitude, pointB.longitude);
+                console.log(`Route too long. Trying new Point B with a different bearing: ${pointB.latitude}, ${pointB.longitude}`);
+            }
+        }
+         else {
             console.error('No route found in response.');
             break;
         }
             
         if (routeData && routeData[0].geometry && routeData[1].geometry) {
-            console.log('drawing map', routeData);
             this.drawRoute(routeData);
         }
         }
