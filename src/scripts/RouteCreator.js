@@ -2,12 +2,14 @@ export class RouteCreator {
 
     map;
     geolocation;
+    targetDistance;
+    direction;
+    routeType;
 
     constructor(map, geolocation) { 
         this.map = map;
         this.geolocation = geolocation;
         this.addEventListeners();
-        this.generateRoute(this.map)
     }
 
     calculateDestination(lat1, lon1, distance, bearing) {
@@ -25,38 +27,29 @@ export class RouteCreator {
                 longitude: lon2 * (180 / Math.PI)
             };
     }
-    
-    async generateRoute(){
-    const targetDistance = 10000;
-              const position = await this.geolocation.getCurrentPosition(); 
-            const { latitude, longitude } = position.coords;
-    let pointB = this.calculateDestination(latitude, longitude, 2000, 45);
-    
-    let foundRoute = false;
-    let data = null;
-            
 
-    while (!foundRoute) {
-        const coordinates = [
-            [longitude, latitude],
-            [pointB.longitude, pointB.latitude]
-        ];
+    getUsersParameters() { 
+        this.targetDistance = document.getElementById('routeDistance').value;
+        this.direction = document.getElementById('routeDirection').value;   
+        this.routeType = document.getElementById('routeType').value;
+    }
 
+    async fetchData(coordinates) {
         const data = {
             coordinates: coordinates,
-            alternative_routes: { target_count: 2, weight_factor: 5, share_factor: 0.5 },
+            alternative_routes: { target_count: 3, weight_factor: 5, share_factor: 0.5 },
             preference: 'recommended',
-            profileName: 'driving-car',
+            profileName: this.routeType,
             geometry: true,
             instructions: true,
             language: 'en',
             units: 'm'
         };
-
         const baseUrl = import.meta.env.VITE_BASE_URL;
-        const mode = 'driving-car';
+        const mode = this.routeType;
         const format = 'geojson';
-        const request = await fetch('https://api.openrouteservice.org/v2/directions/driving-car/geojson', {
+        try { 
+        const request = await fetch(`${baseUrl}${mode}/${format}`, {
             method: 'POST',
             headers: {
                 'Authorization': import.meta.env.VITE_ORS_API_KEY,
@@ -65,30 +58,23 @@ export class RouteCreator {
             },
             body: JSON.stringify(data)
         });
-        const response = await request.json();
-        let routeData;
-        const dist = response.features[0].properties.summary.distance + response.features[1].properties.summary.distance;
-        if (dist && dist > 0) {
-            const routeLength = dist;
-            console.log(`Route length: ${routeLength} meters`);
-            console.log(Math.abs(routeLength - targetDistance))
-            if (Math.abs(routeLength - targetDistance) <= 1000) {
-                foundRoute = true;
-                routeData = response.features;
-                console.log(response.features);
-            } else {
-                pointB = this.calculateDestination(latitude, longitude, dist + 10, 45);
-                console.log(`Trying new Point B: ${pointB.latitude}, ${pointB.longitude}`);
-            }
-        } else {
-            console.error('No route found in response.');
-            break;
+            const response = await request.json();
+            console.log(response);
+            if (response) return response;
+        } catch(error) {
+            console.error('No route found in response.', error);
         }
-            
-        if (routeData && routeData[0].geometry) {
-            console.log('drawing map', routeData)
-            const isochroneGeoJsonThere = routeData[0].geometry;
-            const isochroneGeoJsonBack = routeData[1].geometry;
+    }
+
+    recalculatePointB() { 
+        //if the distance is not within bounds, recalculate new point B
+        //if the distance is less then target distance, just add to dist
+        //if the distance is 2km greater than target distance, change bearing
+    }
+
+    drawRoute(routeData) { 
+        const isochroneGeoJsonThere = routeData[0].geometry;
+        const isochroneGeoJsonBack = routeData[1].geometry;
 
             L.geoJSON(isochroneGeoJsonThere, {
                 style: {
@@ -104,6 +90,44 @@ export class RouteCreator {
                     opacity: 0.7
                 }
             }).addTo(this.map);
+    }
+    
+    async generateRoute(){
+
+        const position = await this.geolocation.getCurrentPosition(); 
+        const { latitude, longitude } = position.coords;
+        let pointB = this.calculateDestination(latitude, longitude, 2000, 45);
+    
+    let foundRoute = false;
+            
+    while (!foundRoute) {
+        const coordinates = [
+            [longitude, latitude],
+            [pointB.longitude, pointB.latitude]
+        ];
+        const response = await this.fetchData(coordinates);
+        let routeData;
+        const dist = response.features[0].properties.summary.distance + response.features[1].properties.summary.distance;
+        if (dist && dist > 0) {
+            const routeLength = dist;
+            console.log(`Route length: ${routeLength} meters`);
+            console.log(Math.abs(routeLength - this.targetDistance))
+            if (Math.abs(routeLength - this.targetDistance) <= 1000) {
+                foundRoute = true;
+                routeData = response.features;
+                console.log(response.features);
+            } else {
+                pointB = this.calculateDestination(latitude, longitude, dist + 300, 90);
+                console.log(`Trying new Point B: ${pointB.latitude}, ${pointB.longitude}`);
+            }
+        } else {
+            console.error('No route found in response.');
+            break;
+        }
+            
+        if (routeData && routeData[0].geometry && routeData[1].geometry) {
+            console.log('drawing map', routeData);
+            this.drawRoute(routeData);
         }
         }
     }
@@ -119,6 +143,7 @@ export class RouteCreator {
 
     document.getElementById('generateRouteInModalButton').addEventListener('click', async (e) => {
         e.preventDefault();
+        this.getUsersParameters(e);
         await this.generateRoute();
         document.getElementById('routeModal').style.display = "none";
     });
