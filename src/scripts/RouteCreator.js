@@ -7,7 +7,7 @@ export class RouteCreator {
         this.map = map;
         this.geolocation = geolocation;
         this.addEventListeners();
-        //this.generateRoute(this.map)
+        this.generateRoute(this.map)
     }
 
     calculateDestination(lat1, lon1, distance, bearing) {
@@ -44,7 +44,7 @@ export class RouteCreator {
 
         const data = {
             coordinates: coordinates,
-            alternative_routes: { target_count: 2, weight_factor: 5, share_factor: 0.2 },
+            alternative_routes: { target_count: 2, weight_factor: 5, share_factor: 0.5 },
             preference: 'recommended',
             profileName: 'driving-car',
             geometry: true,
@@ -67,7 +67,7 @@ export class RouteCreator {
         });
         const response = await request.json();
         let routeData;
-        const dist = response.features[0].properties.summary.distance;
+        const dist = response.features[0].properties.summary.distance + response.features[1].properties.summary.distance;
         if (dist && dist > 0) {
             const routeLength = dist;
             console.log(`Route length: ${routeLength} meters`);
@@ -77,8 +77,7 @@ export class RouteCreator {
                 routeData = response.features;
                 console.log(response.features);
             } else {
-                // there should be used the distance between the user geolocation and point B instead of dist
-                pointB = this.calculateDestination(latitude, longitude, dist + 800, 90);
+                pointB = this.calculateDestination(latitude, longitude, dist + 10, 45);
                 console.log(`Trying new Point B: ${pointB.latitude}, ${pointB.longitude}`);
             }
         } else {
@@ -87,7 +86,7 @@ export class RouteCreator {
         }
             
         if (routeData && routeData[0].geometry) {
-            console.log('drawing map')
+            console.log('drawing map', routeData)
             const isochroneGeoJsonThere = routeData[0].geometry;
             const isochroneGeoJsonBack = routeData[1].geometry;
 
@@ -118,10 +117,10 @@ export class RouteCreator {
     document.getElementById('routeModal').style.display = "none";
 });
 
-        document.getElementById('generateRouteInModalButton').addEventListener('click', async (e) => {
+    document.getElementById('generateRouteInModalButton').addEventListener('click', async (e) => {
         e.preventDefault();
-    await this.generateRoute();
-    //document.getElementById('routeModal').style.display = "none";
+        await this.generateRoute();
+        document.getElementById('routeModal').style.display = "none";
     });
     }
 }
