@@ -7,7 +7,7 @@ export class RouteCreator {
         this.map = map;
         this.geolocation = geolocation;
         this.addEventListeners();
-        this.generateRoute(this.map)
+        //this.generateRoute(this.map)
     }
 
     calculateDestination(lat1, lon1, distance, bearing) {
@@ -118,12 +118,11 @@ export class RouteCreator {
     document.getElementById('routeModal').style.display = "none";
 });
 
-    document.getElementById('generateRouteInModalButton').addEventListener('click', async() => {
-
-
-    generateRoute(latitude, longitude, this.map);
-    document.getElementById('routeModal').style.display = "none";
-});
+        document.getElementById('generateRouteInModalButton').addEventListener('click', async (e) => {
+        e.preventDefault();
+    await this.generateRoute();
+    //document.getElementById('routeModal').style.display = "none";
+    });
     }
 }
 
